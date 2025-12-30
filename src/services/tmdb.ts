@@ -105,6 +105,20 @@ export const getMovieDetails = async (id: number): Promise<MovieDetails | null> 
         if (!response.ok) return null;
         const data = await response.json();
 
+        interface TMDBCast {
+            id: number;
+            name: string;
+            character: string;
+            profile_path: string | null;
+        }
+
+        interface TMDBCrew {
+            id: number;
+            name: string;
+            job: string;
+            department: string;
+        }
+
         return {
             id: data.id,
             title: data.title,
@@ -119,15 +133,15 @@ export const getMovieDetails = async (id: number): Promise<MovieDetails | null> 
             status: data.status,
             budget: data.budget,
             revenue: data.revenue,
-            cast: (data.credits?.cast || []).slice(0, 10).map((c: any) => ({
+            cast: (data.credits?.cast || []).slice(0, 10).map((c: TMDBCast) => ({
                 id: c.id,
                 name: c.name,
                 character: c.character,
                 profile_path: c.profile_path,
             })),
-            crew: (data.credits?.crew || []).filter((c: any) =>
+            crew: (data.credits?.crew || []).filter((c: TMDBCrew) =>
                 ['Director', 'Producer', 'Screenplay', 'Writer'].includes(c.job)
-            ).slice(0, 5).map((c: any) => ({
+            ).slice(0, 5).map((c: TMDBCrew) => ({
                 id: c.id,
                 name: c.name,
                 job: c.job,
@@ -139,3 +153,4 @@ export const getMovieDetails = async (id: number): Promise<MovieDetails | null> 
         return null;
     }
 };
+

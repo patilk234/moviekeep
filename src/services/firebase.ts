@@ -14,6 +14,7 @@ import {
     onAuthStateChanged,
     type User
 } from 'firebase/auth';
+import type { Watchlist, Movie } from '../types';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -65,7 +66,7 @@ export const getCurrentUserId = (): string | null => {
 export const getUserDocRef = (userId: string) => doc(db, 'users', userId);
 
 // Save watchlists to Firestore
-export const saveWatchlists = async (userId: string, watchlists: any[]) => {
+export const saveWatchlists = async (userId: string, watchlists: Watchlist[]) => {
     try {
         await setDoc(getUserDocRef(userId), { watchlists }, { merge: true });
     } catch (error) {
@@ -74,7 +75,7 @@ export const saveWatchlists = async (userId: string, watchlists: any[]) => {
 };
 
 // Save custom movies to Firestore
-export const saveCustomMovies = async (userId: string, customMovies: any[]) => {
+export const saveCustomMovies = async (userId: string, customMovies: Movie[]) => {
     try {
         await setDoc(getUserDocRef(userId), { customMovies }, { merge: true });
     } catch (error) {
@@ -82,8 +83,14 @@ export const saveCustomMovies = async (userId: string, customMovies: any[]) => {
     }
 };
 
+// User data type
+interface UserData {
+    watchlists: Watchlist[];
+    customMovies: Movie[];
+}
+
 // Load user data from Firestore
-export const loadUserData = async (userId: string): Promise<{ watchlists: any[]; customMovies: any[] }> => {
+export const loadUserData = async (userId: string): Promise<UserData> => {
     try {
         const docSnap = await getDoc(getUserDocRef(userId));
         if (docSnap.exists()) {
@@ -102,7 +109,7 @@ export const loadUserData = async (userId: string): Promise<{ watchlists: any[];
 // Subscribe to real-time updates
 export const subscribeToUserData = (
     userId: string,
-    callback: (data: { watchlists: any[]; customMovies: any[] }) => void
+    callback: (data: UserData) => void
 ) => {
     return onSnapshot(getUserDocRef(userId), (docSnap) => {
         if (docSnap.exists()) {

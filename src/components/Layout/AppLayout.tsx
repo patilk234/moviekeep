@@ -93,7 +93,14 @@ export const AppLayout = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-const NavItem = ({ active, onClick, icon, label }: any) => (
+interface NavItemProps {
+    active: boolean;
+    onClick: () => void;
+    icon: React.ReactNode;
+    label: string;
+}
+
+const NavItem = ({ active, onClick, icon, label }: NavItemProps) => (
     <button
         onClick={onClick}
         style={{

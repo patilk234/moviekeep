@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { X, Clock, Calendar, Star, DollarSign } from 'lucide-react';
 import { getMovieDetails, getImageUrl, type MovieDetails } from '../../services/tmdb';
 
@@ -9,17 +9,28 @@ interface MovieInfoModalProps {
 
 export const MovieInfoModal = ({ movieId, onClose }: MovieInfoModalProps) => {
     const [details, setDetails] = useState<MovieDetails | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [fetchingFor, setFetchingFor] = useState<number | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // Derived loading state - loading when we're fetching for current movieId
+    const loading = movieId !== null && (fetchingFor === movieId || details === null);
+
+    const fetchData = useCallback(async (id: number) => {
+        setFetchingFor(id);
+        const data = await getMovieDetails(id);
+        setDetails(data);
+        setFetchingFor(null);
+    }, []);
 
     useEffect(() => {
         if (!movieId) return;
 
-        setLoading(true);
-        getMovieDetails(movieId)
-            .then(setDetails)
-            .finally(() => setLoading(false));
-    }, [movieId]);
+        // Only fetch if we don't have details for this movie
+        if (details?.id !== movieId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- setState is in async callback, not synchronous
+            fetchData(movieId);
+        }
+    }, [movieId, details?.id, fetchData]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {

@@ -29,7 +29,7 @@ const generateUUID = (): string => {
 export const ALREADY_WATCHED_ID = 'already-watched';
 export const CUSTOM_MOVIES_ID = 'custom-movies';
 
-interface AppContextType {
+export interface AppContextType {
     user: User | null;
     watchlists: Watchlist[];
     customMovies: Movie[];
@@ -82,7 +82,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             setLoading(true);
             const data = await loadUserData(user.uid);
 
-            let lists = data.watchlists;
+            const lists = [...data.watchlists];
             const hasAlreadyWatched = lists.some((l: Watchlist) => l.id === ALREADY_WATCHED_ID);
             const hasCustomMovies = lists.some((l: Watchlist) => l.id === CUSTOM_MOVIES_ID);
 

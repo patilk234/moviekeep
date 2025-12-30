@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ReactNode } from 'react';
+import { ReactNode, useRef, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppProvider, useAppContext, ALREADY_WATCHED_ID, CUSTOM_MOVIES_ID } from '../context/AppContext';
+import type { AppContextType } from '../context/AppContext';
 
 // Mock Firebase
 vi.mock('../services/firebase', () => ({
@@ -39,11 +40,6 @@ const TestComponent = () => {
         user,
         loading,
         createWatchlist,
-        deleteWatchlist,
-        addMovieToWatchlist,
-        removeMovieFromWatchlist,
-        markAsWatched,
-        moveMovieToWatchlist,
         addCustomMovie,
     } = useAppContext();
 
@@ -124,15 +120,21 @@ describe('Default List IDs', () => {
 
 describe('moveMovieToWatchlist function', () => {
     it('should be available in context', () => {
-        let contextValue: any;
+        // Use a ref to capture the context value
+        const contextRef = { current: null as AppContextType | null };
+
         const TestContextAccess = () => {
-            contextValue = useAppContext();
+            const ctx = useAppContext();
+            const ref = useRef(ctx);
+            useEffect(() => {
+                contextRef.current = ref.current;
+            }, []);
             return null;
         };
 
         renderWithProviders(<TestContextAccess />);
 
-        expect(contextValue).toHaveProperty('moveMovieToWatchlist');
-        expect(typeof contextValue.moveMovieToWatchlist).toBe('function');
+        expect(contextRef.current).toHaveProperty('moveMovieToWatchlist');
+        expect(typeof contextRef.current?.moveMovieToWatchlist).toBe('function');
     });
 });
