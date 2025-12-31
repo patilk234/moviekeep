@@ -28,8 +28,10 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      - name: Run tests
-        run: npx vitest run
+      - name: Run tests with timeout
+        run: |
+          timeout 300 npx vitest run --no-file-parallelism --pool-options.threads.singleThread
+        continue-on-error: false
         env:
           VITE_TMDB_API_KEY: "test"
           VITE_FIREBASE_API_KEY: "test"
