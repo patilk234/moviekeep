@@ -30,6 +30,14 @@ jobs:
 
       - name: Run tests
         run: npx vitest run
+        env:
+          VITE_TMDB_API_KEY: "test"
+          VITE_FIREBASE_API_KEY: "test"
+          VITE_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com"
+          VITE_FIREBASE_PROJECT_ID: "test"
+          VITE_FIREBASE_STORAGE_BUCKET: "test.appspot.com"
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "123456789"
+          VITE_FIREBASE_APP_ID: "1:123456789:web:test"
 
   build:
     name: Build Verification
