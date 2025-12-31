@@ -1,6 +1,31 @@
 import '@testing-library/jest-dom';
 
-// Mock Firebase before any tests run
+// Mock Firebase SDK packages BEFORE they're imported
+// This prevents the SDK from initializing and making network calls
+vi.mock('firebase/app', () => ({
+    initializeApp: vi.fn(() => ({})),
+}));
+
+vi.mock('firebase/firestore', () => ({
+    getFirestore: vi.fn(() => ({})),
+    doc: vi.fn(),
+    setDoc: vi.fn(),
+    getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
+    onSnapshot: vi.fn(() => () => { }),
+}));
+
+vi.mock('firebase/auth', () => ({
+    getAuth: vi.fn(() => ({})),
+    signInWithPopup: vi.fn(),
+    signOut: vi.fn(),
+    GoogleAuthProvider: vi.fn(),
+    onAuthStateChanged: vi.fn((_, callback) => {
+        callback(null);
+        return () => { };
+    }),
+}));
+
+// Mock Firebase service before any tests run
 vi.mock('../services/firebase', () => ({
     db: {},
     auth: {},
