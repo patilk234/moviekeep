@@ -10,5 +10,7 @@ export default defineConfig({
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
         testTimeout: 10000,
         hookTimeout: 10000,
+        teardownTimeout: 5000,
+        fileParallelism: false,
     },
 })
